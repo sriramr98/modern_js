@@ -28,13 +28,16 @@ func testWithCases(t *testing.T, input string, tests []TestCases) {
 }
 
 func TestNextTokenWithOnlySpecialChars(t *testing.T) {
-	input := `=+()`
+	input := `=+();<>`
 
 	tests := []TestCases{
 		{token.ASSIGN, "="},
 		{token.PLUS, "+"},
 		{token.LPAREN, "("},
 		{token.RPAREN, ")"},
+		{token.SEMICOLON, ";"},
+		{token.LT, "<"},
+		{token.GT, ">"},
 		{token.EOF, ""},
 	}
 
@@ -60,9 +63,9 @@ func TestNextTokenForValidCode(t *testing.T) {
 		{token.SEMICOLON, ";"},
 		{token.LET, "let"},
 		{token.IDENT, "ten"},
-        {token.ASSIGN, "="},
+		{token.ASSIGN, "="},
 		{token.INT, "10"},
-        {token.SEMICOLON, ";"},
+		{token.SEMICOLON, ";"},
 		{token.FUNCTION, "function"},
 		{token.IDENT, "add"},
 		{token.LPAREN, "("},
@@ -88,6 +91,72 @@ func TestNextTokenForValidCode(t *testing.T) {
 		{token.RPAREN, ")"},
 		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
+	}
+
+	testWithCases(t, input, tests)
+}
+
+func TestNextTokenWithConditionals(t *testing.T) {
+	input := `
+        if (result == 10) {
+            return true;
+        }
+
+        if (result >= 20) {
+            return true;
+        }
+
+        if (result <= 50) {
+            return false;
+        }
+
+        if (result != 10) {
+            return true;
+        }
+    }
+    `
+
+	tests := []TestCases{
+		{token.IF, "if"},
+		{token.LPAREN, "("},
+		{token.IDENT, "result"},
+		{token.EQ, "=="},
+		{token.INT, "10"},
+		{token.RPAREN, ")"},
+		{token.LBRACE, "{"},
+		{token.RETURN, "return"},
+		{token.TRUE, "true"},
+		{token.SEMICOLON, ";"},
+		{token.RBRACE, "}"},
+		{token.IF, "if"},
+		{token.LPAREN, "("},
+		{token.IDENT, "result"},
+		{token.GT_OR_EQ, ">="},
+		{token.INT, "20"},
+		{token.RPAREN, ")"},
+		{token.LBRACE, "{"},
+		{token.RETURN, "return"},
+		{token.TRUE, "true"},
+		{token.SEMICOLON, ";"},
+		{token.RBRACE, "}"},
+		{token.IF, "if"},
+		{token.LPAREN, "("},
+		{token.IDENT, "result"},
+		{token.LT_OR_EQ, "<="},
+		{token.INT, "50"},
+		{token.RPAREN, ")"},
+		{token.LBRACE, "{"},
+		{token.RETURN, "return"},
+		{token.FALSE, "false"},
+		{token.SEMICOLON, ";"},
+		{token.RBRACE, "}"},
+		{token.IF, "if"},
+		{token.LPAREN, "("},
+		{token.IDENT, "result"},
+		{token.NOT_EQ, "!="},
+		{token.INT, "10"},
+		{token.RPAREN, ")"},
+		{token.LBRACE, "{"},
 	}
 
 	testWithCases(t, input, tests)
