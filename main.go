@@ -1,0 +1,5 @@
+package modernjs
+
+func main() {
+
+}
